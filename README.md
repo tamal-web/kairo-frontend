@@ -1,17 +1,96 @@
-# OllamaChat for macOS
+# Kairo for macOS
 
-A native macOS SwiftUI chat app for local AI models running via [Ollama](https://ollama.ai).
+Kairo is a native macOS AI assistant that deeply integrates with your operating system to understand your screen, files, documents, images, and context.
+
+Instead of simply answering questions about text you provide, Kairo can understand what you're doing on your Mac and perform the extra work required to complete a task.
+
+For example, ask:
+
+> **"Summarize the document I'm reading."**
+
+Kairo can understand what's on your screen, identify the document, locate the original file on your Mac, read the entire document, and generate a summary of the complete file — rather than only summarizing the text currently visible on screen.
+
+Kairo is designed to feel less like a chatbot and more like an AI layer for your operating system.
 
 ## Features
 
-- 💬 **Real-time streaming** — tokens appear as they're generated
-- 📚 **Chat history sidebar** — all past sessions persisted locally
-- 🤖 **Model picker** — switch between any locally pulled Ollama model
-- ✏️ **Auto-generated titles** — AI names each chat from the first message
-- 🔍 **Search** — filter chats by title or content
-- 📋 **Copy messages** — hover any bubble to copy
-- ⌘N — New chat shortcut
-- ⛔ **Stop generation** — cancel mid-stream
+### 🧠 Context-aware OS assistant
+
+Kairo can understand the context of what you're doing on your Mac and use that context to perform tasks.
+
+- Understand what's currently visible on your screen
+- Use screen context to determine what you're working with
+- Combine screen information with files and other OS data
+- Take additional actions instead of simply returning an answer
+
+### 📄 Intelligent document understanding
+
+Kairo can go beyond the content currently visible on screen.
+
+- Identify the document you're viewing
+- Find the corresponding file on your Mac
+- Read and process the complete document
+- Summarize, analyze, or answer questions about the entire file
+- Perform additional work based on the document's contents
+
+### 🔎 Contextual file search
+
+Kairo isn't just a filename search engine.
+
+- Search files using natural language
+- Search through file content and context
+- Find documents based on what you're currently working on
+- Locate relevant files automatically when completing tasks
+- Connect information across multiple files
+
+### 🖼️ Person & image understanding
+
+Kairo can use images as part of its understanding of your files and screen.
+
+- Find people through images
+- Identify relevant photos based on visual context
+- Search for information across image collections
+- Use image understanding as part of larger tasks
+
+### 📂 Automatic file organization
+
+Kairo can help keep your Mac organized automatically.
+
+- Organize files into appropriate folders
+- Categorize documents based on their contents
+- Group related files together
+- Reduce manual file management
+
+### 🔊 Natural text-to-speech
+
+Kairo provides a better reading experience for on-screen content than the default macOS text-to-speech experience.
+
+- Read what's currently on your screen
+- Turn selected or visible content into speech
+- Provide a more natural conversational voice
+- Make long-form content easier to consume
+
+### 💬 Local AI chat
+
+Kairo supports locally running AI models through [Ollama](https://ollama.ai).
+
+- Real-time streaming responses
+- Chat history persisted locally
+- Switch between locally installed models
+- Automatically generate conversation titles
+- Search previous conversations
+- Copy AI responses
+- Stop generation at any time
+
+### ⚡ Native macOS experience
+
+Built specifically for macOS using SwiftUI and designed to work naturally with the operating system.
+
+- Native SwiftUI interface
+- Keyboard shortcuts
+- Persistent local state
+- Deep OS integration
+- Local-first AI processing through Ollama
 
 ## Requirements
 
@@ -30,54 +109,130 @@ brew install ollama
 # Start the server
 ollama serve
 
-# Pull a model (in a new terminal)
+# Pull a model in a new terminal
 ollama pull llama3.2
+
 # or
 ollama pull mistral
 ollama pull phi3
 ```
 
-### 2. Open in Xcode
+### 2. Open Kairo in Xcode
 
-```
-open OllamaChat.xcodeproj
+```bash
+open Kairo.xcodeproj
 ```
 
 Then press **⌘R** to build and run.
 
-### 3. Entitlements (if needed)
+### 3. Grant required macOS permissions
 
-If you get network errors when building for distribution, add an entitlements file:
+Because Kairo integrates deeply with macOS, some features may require system permissions such as:
 
-**OllamaChat.entitlements**
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "...">
-<plist version="1.0">
-<dict>
-    <key>com.apple.security.network.client</key>
-    <true/>
-</dict>
-</plist>
-```
+- Screen Recording
+- Accessibility
+- Files and Folders
+- Microphone, where applicable
+
+Enable the required permissions in:
+
+**System Settings → Privacy & Security**
 
 ## Project Structure
 
+```text
+Kairo/
+├── KairoApp.swift            # App entry point and commands
+├── Models.swift              # Message, chat, AI and context models
+├── OllamaService.swift       # Ollama streaming API client
+├── ChatStore.swift           # Chat state and persistence
+├── ContentView.swift         # Main application interface
+├── SidebarView.swift         # Chat history and navigation
+├── ChatView.swift            # Conversation interface
+├── MessageRow.swift          # Individual message bubble
+│
+├── Context/                  # Screen and OS context
+├── FileSearch/               # Natural-language file search
+├── Documents/                # Document discovery and processing
+├── Vision/                   # Image and person understanding
+├── Organization/             # Automatic file organization
+└── Speech/                   # Text-to-speech and screen reading
 ```
-OllamaChat/
-├── OllamaChatApp.swift    # App entry, commands
-├── Models.swift           # Message, ChatSession, OllamaModel types
-├── OllamaService.swift    # Streaming API client
-├── ChatStore.swift        # App state + persistence (UserDefaults)
-├── ContentView.swift      # NavigationSplitView root
-├── SidebarView.swift      # Chat history list
-├── ChatView.swift         # Message thread + input
-└── MessageRow.swift       # Individual message bubble
+
+## Architecture
+
+Kairo combines a local AI model with macOS system capabilities.
+
+```text
+                 ┌─────────────────────┐
+                 │        Kairo        │
+                 │   AI OS Assistant   │
+                 └──────────┬──────────┘
+                            │
+          ┌─────────────────┼─────────────────┐
+          │                 │                 │
+          ▼                 ▼                 ▼
+    Screen Context      File System       Vision
+          │                 │                 │
+          ▼                 ▼                 ▼
+    Current App         Documents         Images
+    Screen Content      Metadata          People
+          │                 │                 │
+          └─────────────────┼─────────────────┘
+                            ▼
+                    Local AI / Ollama
+                            │
+                            ▼
+                    Action / Response
 ```
+
+The goal is to let the AI reason across multiple sources of OS context and then perform useful actions rather than simply responding with text.
+
+## Example
+
+Instead of:
+
+> "Here is the text from the PDF. Please summarize it."
+
+You can ask:
+
+> **"Summarize the document I'm looking at."**
+
+Kairo can:
+
+1. Understand what's currently on screen.
+2. Determine which document you're viewing.
+3. Locate the original file on your Mac.
+4. Read the complete document.
+5. Process the entire file with the AI.
+6. Return a concise summary.
+
+This same approach can be extended to searching, organizing files, understanding images, reading content aloud, and completing multi-step tasks.
 
 ## Customization
 
-- **Base URL**: Change `OllamaService.shared.baseURL` to point to a remote Ollama instance
-- **System prompt**: Add a `.system` role message when creating a new `ChatSession`
-- **Persistence**: Replace `UserDefaults` in `ChatStore` with CoreData or SQLite for larger history
-# kairo-frontend
+### Ollama endpoint
+
+Change the Ollama base URL in `OllamaService` to connect to a different Ollama instance.
+
+### Models
+
+Kairo can use any compatible model available through your local Ollama installation.
+
+```bash
+ollama list
+```
+
+### Persistence
+
+Chat history is currently stored locally. The persistence layer can be replaced with Core Data, SQLite, or another storage system as the application grows.
+
+## Vision
+
+Kairo's long-term goal is to become an AI interface for the operating system itself — one that understands not just what you ask, but what you're doing.
+
+Rather than being another chatbot window, Kairo is built around **context → reasoning → action**.
+
+# Kairo
+
+An AI assistant that understands your Mac.
